@@ -11,9 +11,12 @@ if ($conn->connect_error) {
 
 session_start();
 
-// Ambil semua langganan aktif
-$sql = "SELECT * FROM data_subscription WHERE status != 'Cancelled'";
-$result = $conn->query($sql);
+$user_id = $_SESSION['user_id']; 
+$sql = "SELECT * FROM data_subscription WHERE status != 'Cancelled' AND user_id = ?";
+$stmt = $conn->prepare($sql);
+$stmt->bind_param("i", $user_id); 
+$stmt->execute();
+$result = $stmt->get_result();
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -65,11 +68,11 @@ $result = $conn->query($sql);
       <nav id="navmenu" class="navmenu">
         <ul>
           <li><a href="#akun">Akun Anda</a></li>
-          <li><a href="#Subsciption">Subscription</a></li>
-          <li><a href="#Rating">Rating Management</a></li>
+          <li><a href="#Subscription">Subscription</a></li>
           <li class="dropdown">
             <?php if (isset($_SESSION['user_id'])) { ?>  
-            <a><img src="assets\img\testimonials\default.jpg" width="32" height="32" class="rounded-circle me-2">
+            <a><img src="assets/img/testimonials/<?= htmlspecialchars($_SESSION['profile_image'] ?? 'default.jpg') ?>" 
+              width="32" height="32" class="rounded-circle shadow">
               <span class="d-none d-sm-inline"><?php echo htmlspecialchars($_SESSION['username'] ?? 'User'); ?></span> 
               <i class="bi bi-chevron-down toggle-dropdown"></i>
             </a>
@@ -95,62 +98,209 @@ $result = $conn->query($sql);
   </header>
 
   <main class="main">
-
-    <!-- Page Title -->
-    <div class="page-title" data-aos="fade">
-      <div class="container">
-        <h1>Starter Page</h1>
-        <nav class="breadcrumbs">
-          <ol>
-            <li><a href="index.html">Home</a></li>
-            <li class="current">Starter Page</li>
-          </ol>
-        </nav>
-      </div>
-    </div><!-- End Page Title -->
-
-    <!-- Starter Section Section -->
-    <section id="starter-section" class="starter-section section">
-
-      <!-- Section Title -->
-       <div class="container my-5">
-        <h2 class="mb-4">📋 Your Subscriptions</h2>
-
-        <?php if ($result && $result->num_rows > 0): ?>
-          <?php while ($row = $result->fetch_assoc()): ?>
-            <div class="card mb-4 shadow-sm">
-              <div class="card-body">
-                <h5 class="card-title"><?= htmlspecialchars($row['plan']) ?> Plan</h5>
-                <p><strong>Meal Types:</strong> <?= htmlspecialchars($row['meal_type']) ?></p>
-                <p><strong>Delivery Days:</strong> <?= htmlspecialchars($row['delivery_days']) ?></p>
-                <p><strong>Total Price:</strong> Rp <?= number_format($row['total_harga']) ?></p>
-                <p><strong>Status:</strong> <?= htmlspecialchars($row['status']) ?></p>
-
-                <?php if ($row['status'] === 'Paused'): ?>
-                  <p class="text-warning"><strong>Paused:</strong> <?= $row['pause_start'] ?> to <?= $row['pause_end'] ?></p>
-                <?php endif; ?>
-
-                <form action="forms\pause.php" method="POST" class="d-inline">
-                  <input type="hidden" name="id" value="<?= $row['id'] ?>">
-                  <input type="date" name="start_date" required>
-                  <input type="date" name="end_date" required>
-                  <button type="submit" class="btn btn-warning btn-sm">Pause</button>
-                </form>
-
-                <form action="forms\cancel.php" method="POST" class="d-inline ms-2">
-                  <input type="hidden" name="id" value="<?= $row['id'] ?>">
-                  <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure to cancel this subscription?')">Cancel</button>
-                </form>
+    <!-- Page Section -->
+    <section id="akun" class="akun">
+      <div class="page-title" data-aos="fade">
+        <div class="container">
+          <div class="profile-header d-flex flex-column flex-md-row align-items-center gap-4">
+            <div class="profile-image">
+              <img src="assets/img/testimonials/<?= htmlspecialchars($_SESSION['profile_image'] ?? 'default.jpg') ?>" 
+              width="150" height="150" class="rounded-circle shadow">
+            </div>
+            <div class="profile-info">
+              <h1 class="mb-2"><?= htmlspecialchars($_SESSION['username'] ?? 'John Doe') ?></h1>
+              <div class="d-flex align-items-center mb-2">
+                <i class="bi bi-envelope me-1"></i>
+                <span><?= htmlspecialchars($_SESSION['email'] ?? 'john.doe@example.com') ?></span>
+              </div>
+              <div class="d-flex gap-2">
+                <button class="btn btn-outline-primary btn-sm" data-bs-toggle="modal" data-bs-target="#editProfileModal">
+                  <i class="bi bi-pencil"></i> Edit Profile
+                </button>
               </div>
             </div>
-          <?php endwhile; ?>
-        <?php else: ?>
-          <div class="alert alert-info">You have no active subscriptions.</div>
-        <?php endif; ?>
+          </div>
+        </div>
+      </div>
+    </section>
 
+    <!-- subscription Section Section -->
+    <section id="Subscription" class="starter-section section">
+      <div class="container my-5">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+          <h2 class="subscription-heading mb-0"><strong>My Subscriptions</strong></h2>
+          <a href="index.php#book-a-table" class="btn btn-primary">
+            <i class="bi bi-plus-lg"></i> Add Subscription
+          </a>
+        </div>
+
+        <?php if ($result && $result->num_rows > 0): ?>
+          <div class="row g-4">
+            <?php while ($row = $result->fetch_assoc()): ?>
+              <div class="col-md-6">
+                <div class="card subscription-card h-100 border-0 shadow-sm">
+                  <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start mb-3">
+                      <div>
+                        <span class="badge bg-<?= $row['status'] === 'Active' ? 'success' : 'warning' ?> mb-2">
+                          <?= htmlspecialchars($row['status']) ?>
+                        </span>
+                        <h5 class="card-title mb-1 fw-bold">
+                          <?= htmlspecialchars($row['plan']) ?> Plan
+                        </h5>
+                        <p class="text-muted small mb-2">Since <?= date('M d, Y', strtotime($row['created_at'] ?? 'now')) ?></p>
+                      </div>
+                    </div>
+
+                    <div class="subscription-details mb-4">
+                      <div class="row g-3">
+                        <div class="col-6">
+                          <div class="detail-item">
+                            <i class="bi bi-egg-fried me-2 text-primary"></i>
+                            <span>Meal Types:</span>
+                            <strong><?= htmlspecialchars($row['meal_type']) ?></strong>
+                          </div>
+                        </div>
+                        <div class="col-6">
+                          <div class="detail-item">
+                            <i class="bi bi-calendar-event me-2 text-primary"></i>
+                            <span>Delivery Days:</span>
+                            <strong><?= htmlspecialchars($row['delivery_days']) ?></strong>
+                          </div>
+                        </div>
+                        <div class="col-6">
+                          <div class="detail-item">
+                            <i class="bi bi-cash-coin me-2 text-primary"></i>
+                            <span>Total Price:</span>
+                            <strong>Rp <?= number_format($row['total_harga']) ?></strong>
+                          </div>
+                        </div>
+                        <div class="col-6">
+                          <div class="detail-item">
+                            <i class="bi bi-credit-card me-2 text-primary"></i>
+                            <span>Payment:</span>
+                            <strong><?= htmlspecialchars($row['payment_method']) ?></strong>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <?php if ($row['status'] === 'Paused'): ?>
+                      <div class="alert alert-warning p-2 mb-3">
+                        <i class="bi bi-exclamation-triangle me-2"></i>
+                        <strong>Paused:</strong> <?= $row['pause_start'] ?> to <?= $row['pause_end'] ?>
+                      </div>
+                    <?php endif; ?>
+
+                    <button type="button" class="btn btn-warning btn-sm" 
+                      data-bs-toggle="modal" 
+                      data-bs-target="#PauseModal-<?= $row['id'] ?>">
+                      Pause Subscription
+                    </button>
+                    
+                    <form action="forms\cancel.php" method="POST" class="d-inline ms-2">
+                      <input type="hidden" name="id" value="<?= $row['id'] ?>">
+                      <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure to cancel this subscription?')">Cancel Subscription</button>
+                    </form>
+
+                  </div>
+                </div>
+              </div>
+              <!-- Pause Modal -->
+              <div class="modal fade" id="PauseModal-<?= $row['id'] ?>" aria-labelledby="PauseModalLabel" aria-hidden="true">
+                  <div class="modal-dialog modal-dialog-centered">
+                      <div class="modal-content">
+                          <div class="modal-header border-0">
+                              <h5 class="modal-title fw-bold">Pause Subscription #<?= $row['id'] ?></h5>
+                              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                          </div>
+                          <form action="forms/pause.php" method="POST">
+                              <div class="modal-body py-4">
+                                  <input type="hidden" name="id" value="<?= $row['id'] ?>">
+                                  
+                                  <div class="alert alert-info">
+                                      <i class="bi bi-info-circle me-2"></i>
+                                      You can pause your subscription for up to 30 days.
+                                  </div>
+                                  
+                                  <div class="row g-3">
+                                      <div class="col-md-6">
+                                          <label for="start_date-<?= $row['id'] ?>" class="form-label fw-medium">Start Date</label>
+                                          <input type="date" class="form-control" id="start_date-<?= $row['id'] ?>" 
+                                                name="start_date" required min="<?= date('Y-m-d') ?>">
+                                      </div>
+                                      <div class="col-md-6">
+                                          <label for="end_date-<?= $row['id'] ?>" class="form-label fw-medium">End Date</label>
+                                          <input type="date" class="form-control" id="end_date-<?= $row['id'] ?>" 
+                                                name="end_date" required>
+                                      </div>
+                                  </div>
+                                  
+                                  <div class="form-text mt-2">
+                                      During the pause period, you won't be charged and won't receive meals.
+                                  </div>
+                              </div>
+                              <div class="modal-footer border-0">
+                                  <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+                                  <button type="submit" class="btn btn-primary">Confirm Pause</button>
+                              </div>
+                          </form>
+                      </div>
+                  </div>
+              </div>
+            <?php endwhile; ?>
+          </div>
+        <?php else: ?>
+          <div class="empty-state text-center py-5">
+            <div class="empty-state-icon mb-4">
+              <i class="bi bi-emoji-frown display-4 text-muted"></i>
+            </div>
+            <h4 class="mb-3">No Active Subscriptions</h4>
+            <p class="text-muted mb-4">You don't have any active subscriptions yet. Start by adding a new one.</p>
+            <a href="index.php#book-a-table" class="btn btn-primary px-4">
+              <i class="bi bi-plus-lg me-2"></i>Add Subscription
+            </a>
+          </div>
+        <?php endif; ?>
+      </div>
+      <!-- Edit Profile Modal -->
+      <div class="modal fade" id="editProfileModal" tabindex="-1" aria-labelledby="editProfileLabel" aria-hidden="true">
+        <div class="modal-dialog">
+          <form action="forms\updateUser.php" method="POST" enctype="multipart/form-data" class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="editProfileLabel">Edit Profile</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+
+            <div class="modal-body">
+              <!-- Username -->
+              <div class="mb-3">
+                <label for="editUsername" class="form-label">Username</label>
+                <input type="text" class="form-control" id="editUsername" name="username" required value="<?= htmlspecialchars($_SESSION['username'] ?? '') ?>">
+              </div>
+
+              <!-- Password -->
+              <div class="mb-3">
+                <label for="editPassword" class="form-label">New Password <small class="text-muted">(leave blank if unchanged)</small></label>
+                <input type="password" class="form-control" id="editPassword" name="password" placeholder="••••••••">
+              </div>
+
+              <!-- Profile Picture -->
+              <div class="mb-3">
+                <label for="editProfileImage" class="form-label">Profile Picture</label>
+                <input type="file" class="form-control" id="editProfileImage" name="profile_image" accept="image/*">
+              </div>
+            </div>
+
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+              <button type="submit" class="btn btn-primary">Save Changes</button>
+            </div>
+          </form>
+        </div>
       </div>
 
-    </section><!-- /Starter Section Section -->
+    </section>
 
   </main>
 
@@ -226,6 +376,7 @@ $result = $conn->query($sql);
   <script src="assets/vendor/purecounter/purecounter_vanilla.js"></script>
   <script src="assets/vendor/swiper/swiper-bundle.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
   <!-- Main JS File -->
   <script src="assets/js/main.js"></script>

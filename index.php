@@ -55,7 +55,8 @@ session_start();
           <li><a href="#contact">Contact</a></li>
           <li class="dropdown">
             <?php if (isset($_SESSION['user_id'])) { ?>  
-            <a><img src="assets\img\testimonials\default.jpg" width="32" height="32" class="rounded-circle me-2">
+            <a><img src="assets/img/testimonials/<?= htmlspecialchars($_SESSION['profile_image'] ?? 'default.jpg') ?>" 
+              width="32" height="32" class="rounded-circle shadow">
               <span class="d-none d-sm-inline"><?php echo htmlspecialchars($_SESSION['username'] ?? 'User'); ?></span> 
               <i class="bi bi-chevron-down toggle-dropdown"></i>
             </a>
@@ -100,7 +101,7 @@ session_start();
             </div>
           </div>
           <div class="col-lg-5 order-1 order-lg-2 hero-img" data-aos="zoom-out">
-            <img src="assets/img/hero-img.png" class="img-fluid animated" alt="">
+            <img src="assets\img\hero2-img.png" class="img-fluid animated" alt="">
           </div>
         </div>
       </div>
@@ -1006,6 +1007,15 @@ session_start();
           <p>We'd love to hear your thoughts!</p>
         </div>
 
+        <?php if (!isset($_SESSION['user_id'])) { ?>
+          <div class="container my-5">
+            <div class="alert alert-warning text-center shadow-sm border border-warning rounded p-4">
+              <h5 class="mb-3 text-dark">🔒 Akses Terbatas</h5>
+              <p class="mb-3">Anda harus login terlebih dahulu untuk dapat memberikan testimoni, kritik, dan saran kepada kami.</p>
+              <a href="auth.php" class="btn btn-primary btn-sm">🔐 Login Sekarang</a>
+            </div>
+          </div>
+        <?php } else { ?>
         <form action="forms/testimoni.php" method="post" data-aos="fade-up" data-aos-delay="100">
           <div class="row gy-4">
 
@@ -1033,6 +1043,7 @@ session_start();
             </div>
           </div>
         </form>
+        <?php } ?>
       </div>
       <!-- Modal Testimoni Berhasil -->
       <div class="modal fade" id="testimonialSuccessModal" tabindex="-1" aria-hidden="true">
@@ -1143,6 +1154,7 @@ session_start();
 
   <!-- Main JS File -->
   <script src="assets/js/main.js"></script>
+  <script src="assets/js/charts.js"></script>
 
 </body>
 

@@ -221,3 +221,119 @@ document.addEventListener("DOMContentLoaded", function () {
     window.history.replaceState({}, document.title, cleanUrl);
   }
 });
+
+document.addEventListener('DOMContentLoaded', function() {
+  document.querySelectorAll('[id^="start_date-"]').forEach(startDateInput => {
+    const id = startDateInput.id.split('-')[1];
+    const endDateInput = document.getElementById(`end_date-${id}`);
+    
+    startDateInput.addEventListener('change', function() {
+      const startDate = new Date(this.value);
+      const minEndDate = new Date(startDate);
+      minEndDate.setDate(minEndDate.getDate() + 1);
+      
+      const maxEndDate = new Date(startDate);
+      maxEndDate.setDate(maxEndDate.getDate() + 30);
+      
+      endDateInput.min = minEndDate.toISOString().split('T')[0];
+      endDateInput.max = maxEndDate.toISOString().split('T')[0];
+      endDateInput.value = '';
+    });
+  });
+});
+
+function previewImage(input, previewId) {
+  const preview = document.getElementById(previewId);
+  const file = input.files[0];
+  const reader = new FileReader();
+  
+  reader.onload = function(e) {
+    preview.src = e.target.result;
+  }
+  
+  if (file) {
+    reader.readAsDataURL(file);
+  }
+}
+
+document.getElementById('newPassword').addEventListener('input', function() {
+  const password = this.value;
+  const strengthBadge = document.getElementById('passwordStrength');
+
+});
+
+async function loadCustomers() {
+    const response = await fetch('customer.php');
+    const html = await response.text();
+    const temp = document.createElement('div');
+    temp.innerHTML = html;
+    const rows = temp.querySelectorAll('tr');
+    const tbody = document.querySelector('#customers-section tbody');
+    tbody.innerHTML = '';
+    rows.forEach(row => tbody.appendChild(row));
+}
+
+window.addEventListener('DOMContentLoaded', () => {
+    loadCustomers();
+});
+
+// Fungsi untuk mengambil data dari endpoint PHP
+async function fetchData(url, elementId, subtextId, growth = false) {
+    try {
+        const response = await fetch(url);
+        const data = await response.json();
+
+        if (data.error) {
+            console.error(data.error);
+            return;
+        }
+
+        // Update nilai di dashboard
+        document.getElementById(elementId).textContent = data.count || data.revenue || '--';
+        
+        // Update subtext jika ada
+        if (subtextId && data.subtext) {
+            document.getElementById(subtextId).textContent = data.subtext;
+        }
+
+        // Update indikator pertumbuhan jika diperlukan
+        if (growth && data.growth !== undefined) {
+            const trendElement = document.querySelector(`#${subtextId} .trend-indicator`);
+            trendElement.innerHTML = `<i class="bi bi-arrow-${data.growth >= 0 ? 'up' : 'down'}"></i> ${Math.abs(data.growth)}%`;
+            trendElement.classList.toggle('trend-up', data.growth >= 0);
+            trendElement.classList.toggle('trend-down', data.growth < 0);
+        }
+    } catch (error) {
+        console.error('Error fetching data:', error);
+    }
+}
+
+// Fungsi untuk memuat semua data saat halaman dimuat
+function loadDashboardData() {
+    // Ambil parameter tanggal dari input filter
+    const dateStart = document.getElementById('dateStart').value;
+    const dateEnd = document.getElementById('dateEnd').value;
+
+    // URL dengan parameter tanggal jika ada
+    const params = new URLSearchParams();
+    if (dateStart) params.append('dateStart', dateStart);
+    if (dateEnd) params.append('dateEnd', dateEnd);
+
+    // Ambil data dari endpoint PHP
+    fetchData(`get_active_subscriptions.php?${params.toString()}`, 'subGrowth', 'subGrowthSubtext', true);
+    fetchData(`get_monthly_revenue.php?${params.toString()}`, 'mrr', 'mrrSubtext');
+    fetchData(`get_reactivations.php?${params.toString()}`, 'reactivations', 'reactivationsSubtext');
+}
+
+// Jalankan saat halaman dimuat
+document.addEventListener('DOMContentLoaded', loadDashboardData);
+
+// Tambahkan event listener untuk tombol filter
+document.getElementById('filterBtn').addEventListener('click', loadDashboardData);
+
+// Reset filter
+document.getElementById('resetBtn').addEventListener('click', function() {
+    document.getElementById('dateStart').value = '';
+    document.getElementById('dateEnd').value = '';
+    loadDashboardData();
+});

@@ -9,12 +9,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     die("Koneksi gagal: " . $conn->connect_error);
   }
 
-  $sql = "UPDATE data_subscription SET status='Paused', pause_start=?, pause_end=? WHERE id=?";
+  $sql = "UPDATE data_subscription SET status='paused', pause_start=?, pause_end=? WHERE id=?";
   $stmt = $conn->prepare($sql);
   $stmt->bind_param("ssi", $start, $end, $id);
 
   if ($stmt->execute()) {
-    header("Location: dashboard.php");
+    header("Location: ../user.php");
   } else {
     echo "Gagal menjeda: " . $stmt->error;
   }

@@ -16,9 +16,9 @@ if ($conn->connect_error) {
 
 // Cek apakah input adalah email atau username
 if (filter_var($identity, FILTER_VALIDATE_EMAIL)) {
-  $query = "SELECT id, username, password, role FROM users WHERE email = ?";
+  $query = "SELECT id, username, email, password, role, profile_image FROM users WHERE email = ?";
 } else {
-  $query = "SELECT id, username, password, role FROM users WHERE username = ?";
+  $query = "SELECT id, username, email, password, role, profile_image FROM users WHERE username = ?";
 }
 
 $stmt = $conn->prepare($query);
@@ -33,12 +33,18 @@ $hashedInput = hash('sha256', $password);
 if ($user && $hashedInput === $user['password']) {
   $_SESSION['user_id'] = $user['id'];
   $_SESSION['username'] = $user['username'];
+  $_SESSION['email'] = $user['email'];
+  $_SESSION['profile_image'] = $user['profile_image'];
   $_SESSION['role'] = $user['role'];
   
   // Regenerate session ID untuk mencegah session fixation
   session_regenerate_id(true);
   
-  header("Location: ../index.php?login=success");
+  if ($user['role'] === 'admin') {
+    header("Location: ../admin.php?login=success");
+  } else {
+    header("Location: ../index.php?login=success");
+  }
   exit();
 } else {
   header("Location: ../auth.php?error=login");

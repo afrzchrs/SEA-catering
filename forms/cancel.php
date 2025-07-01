@@ -7,12 +7,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     die("Koneksi gagal: " . $conn->connect_error);
   }
 
-  $sql = "UPDATE data_subscription SET status='Cancelled' WHERE id=?";
+  $sql = "UPDATE data_subscription SET status='cancelled' WHERE id=?";
   $stmt = $conn->prepare($sql);
   $stmt->bind_param("i", $id);
 
   if ($stmt->execute()) {
-    header("Location: dashboard.php");
+    header("Location: ../user.php");
   } else {
     echo "Gagal membatalkan: " . $stmt->error;
   }
