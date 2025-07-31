@@ -25,3 +25,18 @@ Sebelum memulai, pastikan Anda telah menginstal:
 - Kemudian juga simpan juga folder catering(database) di dalam mysql misalnya di C:\xampp\mysql\data atau mengimport via phpMyAdmin
 - Kemudian buka browser dan ketikkan http://localhost/SEA-catering/index.php
 - Jalankan atau klik Start Apache dan MySQL agar aplikasi dapat mengakses phpMyAdmin
+
+---
+
+## 🔐 Informasi Login 
+Untuk Akun User bisa menggunakan
+
+   username : Tyler Rake
+   email    :Tyler@mail.com
+   pass     :@TylerRake1
+
+Untuk Akun admin bisa menggunakan
+
+   username : Brian
+   email    :Brian@mail.com
+   pass     :@BrianAdmin1
