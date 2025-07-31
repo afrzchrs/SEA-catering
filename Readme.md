@@ -29,14 +29,12 @@ Sebelum memulai, pastikan Anda telah menginstal:
 ---
 
 ## 🔐 Informasi Login 
-Untuk Akun User bisa menggunakan
+### 1. Untuk Akun User bisa menggunakan
+- username : Tyler Rake
+- email    :Tyler@mail.com
+- pass     :@TylerRake1
 
-   username : Tyler Rake
-   email    :Tyler@mail.com
-   pass     :@TylerRake1
-
-Untuk Akun admin bisa menggunakan
-
-   username : Brian
-   email    :Brian@mail.com
-   pass     :@BrianAdmin1
+### 2. Untuk Akun admin bisa menggunakan
+- username : Brian
+- email    :Brian@mail.com
+- pass     :@BrianAdmin1
