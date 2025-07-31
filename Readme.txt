@@ -1,63 +1,58 @@
-===========================
-     SEA-CATERING APP
-===========================
+SEA-Catering
+SEA-Catering adalah aplikasi pemesanan dan manajemen layanan katering berbasis web. Aplikasi ini dibangun menggunakan PHP dan MySQL, dan dapat dijalankan secara lokal menggunakan XAMPP.
 
-SEA-Catering adalah aplikasi pemesanan dan manajemen layanan katering berbasis web. 
-Aplikasi ini dibangun menggunakan PHP dan MySQL, dan dijalankan secara lokal melalui XAMPP.
+📦 Persiapan Instalasi
+1. Instalasi XAMPP
+Pastikan Anda telah menginstal XAMPP di komputer Anda.
 
----------------------------------------
-1. PERSIAPAN INSTALASI
----------------------------------------
+2. Letakkan Folder Project
+Ekstrak atau salin folder SEA-CATERING ke direktori berikut:
 
-1.1. Instal XAMPP terlebih dahulu
-     Link unduhan: https://www.apachefriends.org/index.html
+makefile
+Copy
+Edit
+C:\xampp\htdocs\SEA-CATERING
+3. Konfigurasi Database
+Terdapat dua opsi untuk menyiapkan database:
 
-1.2. Simpan folder project:
-     - Letakkan folder "SEA-CATERING" di:
-       C:\xampp\htdocs\SEA-CATERING
+Opsi A: Manual (Salin Folder)
+Salin folder catering (berisi data database) ke:
 
-1.3. Konfigurasi Database
-     Terdapat dua cara:
+kotlin
+Copy
+Edit
+C:\xampp\mysql\data
+Opsi B: Menggunakan phpMyAdmin
+Jalankan Apache dan MySQL melalui XAMPP.
 
-     a. Manual (Salin Folder):
-        - Salin folder database "catering" ke:
-          C:\xampp\mysql\data
+Buka browser dan akses http://localhost/phpmyadmin
 
-     b. Import via phpMyAdmin:
-        - Jalankan Apache & MySQL lewat XAMPP
-        - Buka browser: http://localhost/phpmyadmin
-        - Buat database dengan nama: catering
-        - Import file SQL (jika tersedia)
+Buat database baru dengan nama: catering
 
----------------------------------------
-2. MENJALANKAN APLIKASI
----------------------------------------
+Import file .sql yang tersedia di dalam folder database ke database tersebut.
 
-2.1. Jalankan XAMPP
-     - Klik "Start" pada Apache dan MySQL
+🚀 Menjalankan Aplikasi
+Jalankan XAMPP, lalu klik Start pada Apache dan MySQL.
 
-2.2. Buka browser dan akses:
-     http://localhost/SEA-CATERING/index.php
+Buka browser dan akses:
 
-2.3. Aplikasi siap digunakan
+bash
+Copy
+Edit
+http://localhost/SEA-CATERING/index.php
+Aplikasi siap digunakan.
 
----------------------------------------
-3. INFORMASI AKUN
----------------------------------------
-
-=== Akun Pengguna ===
+🔐 Informasi Login
+Akun Pengguna (User)
 Username : Tyler Rake
-Email    : Tyler@mail.com
+
+Email : Tyler@mail.com
+
 Password : @TylerRake1
 
-=== Akun Admin ===
+Akun Admin
 Username : Brian
-Email    : Brian@mail.com
+
+Email : Brian@mail.com
+
 Password : @BrianAdmin1
-
----------------------------------------
-4. CATATAN TAMBAHAN
----------------------------------------
-
-- Pastikan folder aplikasi dan database memiliki permission yang benar
-- Gunakan browser modern seperti Chrome atau Fir
