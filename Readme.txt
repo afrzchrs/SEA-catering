@@ -1,58 +1,23 @@
-SEA-Catering
-SEA-Catering adalah aplikasi pemesanan dan manajemen layanan katering berbasis web. Aplikasi ini dibangun menggunakan PHP dan MySQL, dan dapat dijalankan secara lokal menggunakan XAMPP.
+# 🍽️ SEA-CATERING
 
-📦 Persiapan Instalasi
-1. Instalasi XAMPP
-Pastikan Anda telah menginstal XAMPP di komputer Anda.
+**SEA-CATERING** adalah aplikasi web pemesanan dan manajemen layanan katering berbasis **PHP** dan **MySQL**, yang dijalankan secara lokal menggunakan **XAMPP**.
 
-2. Letakkan Folder Project
-Ekstrak atau salin folder SEA-CATERING ke direktori berikut:
+---
 
-makefile
-Copy
-Edit
-C:\xampp\htdocs\SEA-CATERING
-3. Konfigurasi Database
-Terdapat dua opsi untuk menyiapkan database:
+## 🛠️ Persyaratan
 
-Opsi A: Manual (Salin Folder)
-Salin folder catering (berisi data database) ke:
+Sebelum memulai, pastikan Anda telah menginstal:
 
-kotlin
-Copy
-Edit
-C:\xampp\mysql\data
-Opsi B: Menggunakan phpMyAdmin
-Jalankan Apache dan MySQL melalui XAMPP.
+- [XAMPP](https://www.apachefriends.org/index.html) (untuk Apache & MySQL)
+- Web browser modern seperti Chrome, Firefox, dll.
 
-Buka browser dan akses http://localhost/phpmyadmin
+---
 
-Buat database baru dengan nama: catering
+## 📦 Langkah Instalasi
 
-Import file .sql yang tersedia di dalam folder database ke database tersebut.
+### 1. Install dan Siapkan XAMPP
+- Unduh dan pasang XAMPP sesuai OS Anda dari:  
+  👉 https://www.apachefriends.org
 
-🚀 Menjalankan Aplikasi
-Jalankan XAMPP, lalu klik Start pada Apache dan MySQL.
-
-Buka browser dan akses:
-
-bash
-Copy
-Edit
-http://localhost/SEA-CATERING/index.php
-Aplikasi siap digunakan.
-
-🔐 Informasi Login
-Akun Pengguna (User)
-Username : Tyler Rake
-
-Email : Tyler@mail.com
-
-Password : @TylerRake1
-
-Akun Admin
-Username : Brian
-
-Email : Brian@mail.com
-
-Password : @BrianAdmin1
+### 2. Simpan Folder Aplikasi
+- Ekstrak atau salin folder `SEA-CATERING` ke direktori:
